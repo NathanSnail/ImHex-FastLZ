@@ -52,9 +52,9 @@ include(ImHexSDK)
 # as well as libwolv, libromfs, libfmt and ImGui, but you can link against any libraries you want
 add_imhex_plugin(
     NAME
-        example_plugin
+        fastlz_plugin
     SOURCES
-        source/example_plugin.cpp
+        source/fastlz_plugin.cpp
     INCLUDES
         include
 )

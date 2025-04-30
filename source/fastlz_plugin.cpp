@@ -6,6 +6,6 @@
 // This is the main entry point of your plugin. The code in the body of this construct will be executed
 // when ImHex starts up and loads the plugin.
 // The strings in the header are used to display information about the plugin in the UI.
-IMHEX_PLUGIN_SETUP("Example Plugin", "Author", "Description") {
+IMHEX_PLUGIN_SETUP("FastLZ Plugin", "NathanSnail", "Adds FastLZ decompression to the pattern language") {
     // Put your init code here
 }
