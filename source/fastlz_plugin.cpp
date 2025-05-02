@@ -2,11 +2,13 @@
 #include "pl/core/evaluator.hpp"
 #include "pl/core/token.hpp"
 #include "wolv/types.hpp"
+#include <algorithm>
+#include <fastlz.h>
+#include <functional>
 #include <hex/api/content_registry.hpp>
 #include <hex/api/plugin_manager.hpp>
 #include <hex/helpers/logger.hpp>
 #include <hex/plugin.hpp>
-#include <fastlz.h>
 #include <string>
 
 // Browse through the headers in lib/libimhex/include/hex/api/ to see what you
@@ -21,28 +23,44 @@ using hex::log::debug;
 
 using namespace pl::core;
 
-IMHEX_PLUGIN_SETUP("FastLZ Plugin", "NathanSnail",
-			 "Adds FastLZ decompression to the pattern language") {
+template <typename Func>
+void register_fastlz_fn(const std::string &name, Func fn) {
 	pl::api::Namespace ns = {"fastlz"};
+	// *_to_section(data: []u8, section: std::mem::section)
 	hex::ContentRegistry::PatternLanguage::addFunction(
-	    // size buffer section
-	    ns, "to_section", pl::api::FunctionParameterCount::exactly(2),
-	    [](Evaluator *ctx, const std::vector<Token::Literal> &params)
+	    ns, name, pl::api::FunctionParameterCount::exactly(2),
+	    [fn = std::move(fn)](Evaluator *ctx,
+					 const std::vector<Token::Literal> &params)
 		  -> std::optional<Token::Literal> {
-		    auto compressed_bytes = params[0].toBytes();
+		    auto in_bytes = params[0].toBytes();
+		    constexpr size_t min_input_size = 16;
+		    in_bytes.resize(std::max(min_input_size, in_bytes.size()));
 		    u64 section_id = u64(params[1].toUnsigned());
 		    auto &section = ctx->getSection(section_id);
-		    section.push_back(42);
-		    debug("Got called");
-		    std::string x = "";
-		    for (auto y : compressed_bytes) {
-			    x += std::to_string(y) + ", ";
+		    constexpr size_t min_output_size = 66;
+		    size_t reserve = std::max(min_output_size, in_bytes.size() * 2);
+		    u8 *out_buf = new u8[reserve];
+		    int comp = fn(&in_bytes[0], in_bytes.size(), out_buf, reserve);
+		    for (int i = 0; i < comp; ++i) {
+			    section.push_back(out_buf[i]);
 		    }
-		    debug(x);
-			u8 xs[16] = {1, 2, 3, 4, 5, 6 ,7, 8, 9, 10 ,11, 12 ,13, 14, 15, 16};
-			u8 ys[66];
-			int comp = fastlz_compress(xs, 16, ys);
-			debug(std::to_string(comp));
+		    delete[] out_buf;
+		    debug(std::to_string(comp));
 		    return std::optional<Token::Literal>();
+	    });
+}
+
+IMHEX_PLUGIN_SETUP("FastLZ Plugin", "NathanSnail",
+			 "Adds FastLZ decompression to the pattern language") {
+	register_fastlz_fn("compress_to_section", [](u8 *in_bytes, size_t in_size,
+								   u8 *out_bytes, size_t _) {
+		return fastlz_compress(in_bytes, in_size, out_bytes);
+	});
+
+	register_fastlz_fn(
+	    "decompress_to_section",
+	    [](u8 *in_bytes, size_t in_size, u8 *out_bytes, size_t out_size) {
+		    return fastlz_decompress(in_bytes, in_size, out_bytes,
+						     out_size);
 	    });
 }
