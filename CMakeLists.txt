@@ -44,6 +44,22 @@ project(ImHexPlugin)
 # On MacOS, the SDK is located inside of the ImHex.app bundle under ImHex.app/Contents/Resources/sdk
 include(ImHexSDK)
 
+include(FetchContent)
+
+FetchContent_Declare(fastlz
+    GIT_REPOSITORY https://github.com/ariya/FastLZ.git
+    GIT_TAG 344eb4025f9ae866ebf7a2ec48850f7113a97a42
+)
+
+FetchContent_MakeAvailable(fastlz)
+
+add_library(fastlz
+    ${fastlz_SOURCE_DIR}/fastlz.c
+    ${fastlz_SOURCE_DIR}/fastlz.h
+)
+
+message(fastlz_SOURCE_DIR="${fastlz_SOURCE_DIR}")
+
 # Register the plugin
 # This will configure everything you need to make your plugin work
 # Modify the arguments to your needs. Right now it defines a plugin called `example_plugin`
@@ -57,4 +73,5 @@ add_imhex_plugin(
         source/fastlz_plugin.cpp
     INCLUDES
         include
+        ${fastlz_SOURCE_DIR}
 )
