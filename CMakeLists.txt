@@ -74,4 +74,6 @@ add_imhex_plugin(
     INCLUDES
         include
         ${fastlz_SOURCE_DIR}
+    LIBRARIES
+        fastlz
 )
