@@ -18,7 +18,7 @@ Now when you run imhex you can use `fastlz::*` functions.
 struct FastLZFile {
     u32 compressed_size;
     u32 decompressed_size;
-    u8 data[];
+    u8 data[compressed_size];
 }
 // to the file
 fn compress_to_section(data: [u8], section: std::mem::section) -> ();
