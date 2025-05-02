@@ -104,6 +104,7 @@ IMHEX_PLUGIN_SETUP("FastLZ Plugin", "NathanSnail",
 		    return std::optional<Token::Literal>{(u128)addr};
 	    });
 
+	// main_section() -> u128
 	hex::ContentRegistry::PatternLanguage::addFunction(
 	    ns, "main_section", pl::api::FunctionParameterCount::exactly(0),
 	    [](Evaluator *ctx, const std::vector<Token::Literal> &params)
