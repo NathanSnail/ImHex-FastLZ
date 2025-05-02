@@ -8,3 +8,4 @@ Makefile
 cmake_install.cmake
 fastlz_plugin.hexplug
 libromfs/
+compile_commands.json
