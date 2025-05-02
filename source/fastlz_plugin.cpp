@@ -1,10 +1,11 @@
 #include "pl/api.hpp"
+#include "pl/core/evaluator.hpp"
 #include "pl/core/token.hpp"
+#include "wolv/types.hpp"
 #include <hex/api/content_registry.hpp>
 #include <hex/api/plugin_manager.hpp>
 #include <hex/helpers/logger.hpp>
 #include <hex/plugin.hpp>
-#include <iostream>
 #include <string>
 
 // Browse through the headers in lib/libimhex/include/hex/api/ to see what you
@@ -23,17 +24,13 @@ IMHEX_PLUGIN_SETUP("FastLZ Plugin", "NathanSnail",
 			 "Adds FastLZ decompression to the pattern language") {
 	pl::api::Namespace ns = {"fastlz"};
 	hex::ContentRegistry::PatternLanguage::addFunction(
-	    ns, "debug_type", pl::api::FunctionParameterCount::exactly(1),
-	    [](Evaluator *evaluator, const std::vector<Token::Literal> &params)
-		  -> std::optional<Token::Literal> {
-		    debug(std::to_string((int)params[0].getType()));
-		    return std::optional<Token::Literal>();
-	    });
-	hex::ContentRegistry::PatternLanguage::addFunction(
 	    // size buffer section
 	    ns, "to_section", pl::api::FunctionParameterCount::exactly(2),
-	    [](Evaluator *evaluator, const std::vector<Token::Literal> &params)
+	    [](Evaluator *ctx, const std::vector<Token::Literal> &params)
 		  -> std::optional<Token::Literal> {
+		    u64 section_id = u64(params[1].toUnsigned());
+		    auto &section = ctx->getSection(section_id);
+		    section.push_back(42);
 		    debug("Got called");
 		    auto compressed_bytes = params[0].toBytes();
 		    std::string x = "";
