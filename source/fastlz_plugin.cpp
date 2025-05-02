@@ -65,7 +65,7 @@ IMHEX_PLUGIN_SETUP("FastLZ Plugin", "NathanSnail",
 
 	/* decompress_to_section(compressed: std::mem::section,
 	 *                       addr: std::mem::section,
-	 *                       output: std::mem::section) -> new addr */
+	 *                       output: std::mem::section) -> u128 new addr */
 	hex::ContentRegistry::PatternLanguage::addFunction(
 	    ns, "decompress_to_section",
 	    pl::api::FunctionParameterCount::exactly(3),
