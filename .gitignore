@@ -10,3 +10,4 @@ fastlz_plugin.hexplug
 libromfs/
 compile_commands.json
 _deps/
+libfastlz.a
