@@ -21,9 +21,9 @@ struct FastLZFile {
     u8 data[compressed_size];
 }
 // to the file
-fn compress_to_section(data: [u8], section: std::mem::section) -> ();
+fn compress_to_section(data: [u8], section: std::mem::Section) -> ();
 // Reads a FastLZ compressed file starting at addr of the above form to the provided section, returns the new address the cursor is at after reading
-fn decompress_to_section(compressed: std::mem::section, addr: std::mem::section, output: std::mem::section) -> u128 /* new addr */;
+fn decompress_to_section(compressed: std::mem::Section, addr: std::mem::Section, output: std::mem::Section) -> u128 /* new addr */;
 // Returns the main section, not sure why this isn't in the standard library
 fn main_section() -> u128 /* main section id */;
 ```
